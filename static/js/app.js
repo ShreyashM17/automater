@@ -10,6 +10,7 @@ class TextReplacerUI {
     init() {
         this.bindEvents();
         this.loadSavedSettings();
+        this.initDarkMode();
     }
 
     bindEvents() {
@@ -192,7 +193,7 @@ class TextReplacerUI {
                         <p class="mb-3">Preview of changes that would be made:</p>
                         <div class="row">
                             <div class="col-md-4">
-                                <div class="card bg-light">
+                                <div class="card">
                                     <div class="card-body text-center">
                                         <h3 class="text-primary">${result.files_processed || 0}</h3>
                                         <p class="mb-0">Files Processed</p>
@@ -200,7 +201,7 @@ class TextReplacerUI {
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="card bg-light">
+                                <div class="card">
                                     <div class="card-body text-center">
                                         <h3 class="text-success">${result.files_changed || 0}</h3>
                                         <p class="mb-0">Files Changed</p>
@@ -208,7 +209,7 @@ class TextReplacerUI {
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="card bg-light">
+                                <div class="card">
                                     <div class="card-body text-center">
                                         <h3 class="text-warning">${result.total_replacements || 0}</h3>
                                         <p class="mb-0">Total Replacements</p>
@@ -307,6 +308,57 @@ class TextReplacerUI {
                 console.error('Error loading saved settings:', error);
             }
         }
+    }
+
+    initDarkMode() {
+        // Add dark mode toggle to sidebar header
+        const sidebarHeader = document.querySelector('.sidebar-header');
+        const darkModeToggle = document.createElement('div');
+        darkModeToggle.className = 'dark-mode-toggle mt-3';
+        darkModeToggle.innerHTML = `
+            <button class="btn btn-outline-secondary btn-sm" id="darkModeToggle">
+                <i class="fas fa-moon"></i> Dark Mode
+            </button>
+        `;
+        sidebarHeader.appendChild(darkModeToggle);
+
+        // Bind dark mode toggle event
+        document.getElementById('darkModeToggle').addEventListener('click', () => {
+            this.toggleDarkMode();
+        });
+
+        // Load saved dark mode preference
+        const isDarkMode = localStorage.getItem('darkMode') === 'true';
+        if (isDarkMode) {
+            this.enableDarkMode();
+        }
+    }
+
+    toggleDarkMode() {
+        const isDarkMode = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+        if (isDarkMode) {
+            this.disableDarkMode();
+        } else {
+            this.enableDarkMode();
+        }
+    }
+
+    enableDarkMode() {
+        document.documentElement.setAttribute('data-bs-theme', 'dark');
+        localStorage.setItem('darkMode', 'true');
+        const toggleBtn = document.getElementById('darkModeToggle');
+        toggleBtn.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+        toggleBtn.classList.remove('btn-outline-secondary');
+        toggleBtn.classList.add('btn-outline-warning');
+    }
+
+    disableDarkMode() {
+        document.documentElement.setAttribute('data-bs-theme', 'light');
+        localStorage.setItem('darkMode', 'false');
+        const toggleBtn = document.getElementById('darkModeToggle');
+        toggleBtn.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+        toggleBtn.classList.remove('btn-outline-warning');
+        toggleBtn.classList.add('btn-outline-secondary');
     }
 }
 
