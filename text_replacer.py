@@ -502,76 +502,38 @@ This PR contains automated text replacements across {len(self.changes_made)} fil
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Find and replace text in files, create branch, and raise PR",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Examples:
-  # Basic usage (auto-detects GitHub repo from git remote)
-  python text_replacer.py ./my-project "old text" "new text"
-  
-  # With GitHub token from environment variable
-  export GITHUB_TOKEN="your_token_here"
-  python text_replacer.py ./my-project "old text" "new text"
-  
-  # Dry run to preview changes
-  python text_replacer.py ./my-project "old text" "new text" --dry-run
-  
-  # Target specific file types
-  python text_replacer.py ./my-project "TODO" "FIXME" --extensions .py .js .ts
-  
-  # Use regex pattern
-  python text_replacer.py ./my-project "version: \\d+\\.\\d+\\.\\d+" "version: 2.0.0" --regex
-        """
-    )
-    parser.add_argument("directory", help="Directory to process")
-    parser.add_argument("search", help="Text pattern to search for")
+    """Simple CLI interface for the Text Replacer tool."""
+    parser = argparse.ArgumentParser(description="Text Replacer Tool - Use web UI for better experience")
+    parser.add_argument("directory", help="Directory to search in")
+    parser.add_argument("search", help="Text to search for")
     parser.add_argument("replace", help="Text to replace with")
-    parser.add_argument("--extensions", nargs="+", help="File extensions to process (e.g., .py .js .ts)")
-    parser.add_argument("--regex", action="store_true", help="Use regex for search pattern")
-    parser.add_argument("--branch", help="Branch name (auto-generated if not provided)")
-    parser.add_argument("--commit-message", help="Commit message")
-    parser.add_argument("--pr-title", help="PR title")
-    parser.add_argument("--pr-description", help="PR description")
-    parser.add_argument("--github-token", help="GitHub token for PR creation (or set GITHUB_TOKEN env var)")
-    parser.add_argument("--repo-owner", help="GitHub repository owner (auto-detected from git remote if not provided)")
-    parser.add_argument("--repo-name", help="GitHub repository name (auto-detected from git remote if not provided)")
-    parser.add_argument("--dry-run", action="store_true", help="Show what would be changed without making changes")
-    parser.add_argument("--max-files", type=int, default=10000, help="Maximum number of files to scan (default: 10000)")
-    parser.add_argument("--exclude-dirs", nargs="+", help="Directories to exclude (e.g., node_modules .git dist)")
+    parser.add_argument("--dry-run", action="store_true", help="Preview changes without making them")
+    parser.add_argument("--max-files", type=int, default=10000, help="Maximum number of files to process")
     
     args = parser.parse_args()
     
-    # Initialize the replacer
-    replacer = TextReplacer(
-        directory=args.directory,
-        github_token=args.github_token,
-        repo_owner=args.repo_owner,
-        repo_name=args.repo_name
-    )
+    # Initialize replacer
+    replacer = TextReplacer(directory=args.directory)
     
     if args.dry_run:
-        print("🔍 DRY RUN MODE - No changes will be made")
-        print("=" * 50)
-        replacer.replace_text(args.search, args.replace, args.extensions, args.regex, 
-                             args.max_files, args.exclude_dirs, dry_run=True)
-        return
+        print("🔍 Running dry run...")
+        result = replacer.replace_text(
+            search_text=args.search,
+            replace_text=args.replace,
+            max_files=args.max_files,
+            dry_run=True
+        )
+        print(f"📊 Files processed: {result['files_processed']}, Files changed: {result['files_changed']}")
+    else:
+        print("🚀 Starting replacement...")
+        result = replacer.replace_text(
+            search_text=args.search,
+            replace_text=args.replace,
+            max_files=args.max_files
+        )
+        print(f"✅ Replacement completed: {result['files_changed']} files changed")
     
-    # Run the full workflow
-    success = replacer.run_full_workflow(
-        search_pattern=args.search,
-        replacement=args.replace,
-        file_extensions=args.extensions,
-        use_regex=args.regex,
-        branch_name=args.branch,
-        commit_message=args.commit_message,
-        pr_title=args.pr_title,
-        pr_description=args.pr_description,
-        max_files=args.max_files,
-        exclude_dirs=args.exclude_dirs
-    )
-    
-    sys.exit(0 if success else 1)
+    print("\n💡 For advanced features, use the web UI: python app.py")
 
 
 if __name__ == "__main__":

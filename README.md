@@ -1,16 +1,17 @@
 # Text Replacer Tool
 
-A powerful command-line tool that can find and replace text in files within a directory, automatically create a Git branch, commit changes, and raise a pull request on GitHub.
+A powerful web-based tool that can find and replace text in files within a directory, automatically create a Git branch, commit changes, and raise a pull request on GitHub.
 
 ## Features
 
+- 🎨 **Modern Web UI**: Beautiful dark mode interface with real-time progress tracking
 - 🔍 **Smart Text Search**: Find text patterns across multiple files in a directory
 - 🔄 **Flexible Replacement**: Replace text with exact matches or regex patterns
 - 🌿 **Git Integration**: Automatically create branches and commit changes
 - 🚀 **GitHub Integration**: Create pull requests automatically
 - 📁 **File Filtering**: Target specific file extensions
 - 🔍 **Dry Run Mode**: Preview changes before applying them
-- ⚙️ **Configurable**: Use configuration files for default settings
+- ⚙️ **Advanced Options**: Comprehensive configuration options
 
 ## Installation
 
@@ -49,146 +50,76 @@ Then open your browser and go to `http://localhost:5001`
 - 🔔 **Notifications**: Toast notifications for important events
 - 📱 **Mobile Friendly**: Works on desktop, tablet, and mobile devices
 
-### Command Line Interface
+### Command Line Interface (Basic)
 
-For command-line usage, see the CLI section below.
-
-## CLI Usage
-
-### Basic Usage (Auto-detects GitHub repo)
+For simple text replacement without Git operations:
 
 ```bash
+# Basic replacement
 python text_replacer.py /path/to/directory "old text" "new text"
-```
 
-### With GitHub Token from Environment Variable
-
-```bash
-export GITHUB_TOKEN="your_github_token"
-python text_replacer.py /path/to/directory "old text" "new text"
-```
-
-### Advanced Usage
-
-```bash
-python text_replacer.py /path/to/directory "old text" "new text" \
-  --extensions .py .js .ts \
-  --regex \
-  --branch "feature/text-replacement" \
-  --commit-message "Update text across codebase" \
-  --pr-title "Update text references" \
-  --pr-description "This PR updates text references across the codebase"
-```
-
-### Dry Run Mode
-
-Preview changes without making them:
-
-```bash
+# Dry run to preview changes
 python text_replacer.py /path/to/directory "old text" "new text" --dry-run
+
+# Limit number of files
+python text_replacer.py /path/to/directory "old text" "new text" --max-files 1000
 ```
 
-## Command Line Options
-
-| Option | Description | Required |
-|--------|-------------|----------|
-| `directory` | Directory to process | Yes |
-| `search` | Text pattern to search for | Yes |
-| `replace` | Text to replace with | Yes |
-| `--extensions` | File extensions to process (e.g., .py .js .ts) | No |
-| `--regex` | Use regex for search pattern | No |
-| `--branch` | Branch name (auto-generated if not provided) | No |
-| `--commit-message` | Commit message | No |
-| `--pr-title` | PR title | No |
-| `--pr-description` | PR description | No |
-| `--github-token` | GitHub token for PR creation (or set GITHUB_TOKEN env var) | No |
-| `--repo-owner` | GitHub repository owner (auto-detected from git remote) | No |
-| `--repo-name` | GitHub repository name (auto-detected from git remote) | No |
-| `--dry-run` | Show what would be changed without making changes | No |
+**Note**: For advanced features like Git operations, PR creation, and full workflow management, use the web UI.
 
 ## Configuration
 
-The tool uses environment variables and command-line arguments for configuration. No additional config files are needed.
+### Environment Variables
 
-## Examples
+- `GITHUB_TOKEN`: Your GitHub personal access token for PR creation
 
-### Example 1: Simple Text Replacement
+### GitHub Token Setup
 
-```bash
-python text_replacer.py ./my-project "old company name" "new company name"
+1. Go to GitHub Settings → Developer settings → Personal access tokens
+2. Generate a new token with `repo` permissions
+3. Set the token as an environment variable:
+   ```bash
+   export GITHUB_TOKEN="your_token_here"
+   ```
+
+## How It Works
+
+1. **Directory Selection**: Choose the directory containing your Git repository
+2. **Text Search**: Enter the text pattern you want to find
+3. **Replacement**: Specify the text to replace with
+4. **Configuration**: Set advanced options like file extensions, exclusions, etc.
+5. **Preview**: Use dry run mode to preview changes
+6. **Execute**: Run the full workflow to make changes, create branch, commit, and raise PR
+
+## File Structure
+
 ```
-
-### Example 2: Regex Replacement
-
-```bash
-python text_replacer.py ./my-project "version: \d+\.\d+\.\d+" "version: 2.0.0" --regex
+text_replacer/
+├── app.py                 # Flask web application
+├── text_replacer.py       # Core text replacement logic
+├── requirements.txt       # Python dependencies
+├── .gitignore            # Git ignore file
+├── static/
+│   ├── css/
+│   │   └── style.css     # Dark mode styles
+│   └── js/
+│       └── app.js        # Web UI JavaScript
+└── templates/
+    └── index.html        # Web UI template
 ```
-
-### Example 3: Target Specific Files
-
-```bash
-python text_replacer.py ./my-project "TODO" "FIXME" --extensions .py .js
-```
-
-### Example 4: Full Workflow with PR (Auto-detected repo)
-
-```bash
-export GITHUB_TOKEN="your_github_token"
-python text_replacer.py ./my-project "old text" "new text" \
-  --branch "update-text" \
-  --pr-title "Update text references"
-```
-
-## Workflow
-
-The tool follows this workflow:
-
-1. **Validation**: Checks if the directory exists and is a Git repository
-2. **Branch Creation**: Creates a new branch (or uses existing uncommitted changes)
-3. **Text Search**: Finds all files containing the search pattern
-4. **Text Replacement**: Replaces the text in matching files
-5. **Commit**: Commits the changes with a descriptive message
-6. **Push**: Pushes the branch to the remote repository
-7. **Pull Request**: Creates a pull request on GitHub (if credentials provided)
-
-## Safety Features
-
-- **Dry Run Mode**: Preview changes before applying them
-- **Git Integration**: All changes are tracked in Git
-- **Branch Isolation**: Changes are made in a separate branch
-- **Detailed Logging**: See exactly what changes are being made
-- **Error Handling**: Graceful handling of file access errors
-
-## Error Handling
-
-The tool handles various error conditions:
-
-- Directory doesn't exist
-- Not a Git repository
-- File access permissions
-- Git command failures
-- GitHub API errors
-- Network connectivity issues
-
-## Requirements
-
-- Python 3.7+
-- Git
-- requests library
-- GitHub access (for PR creation)
-
-## License
-
-MIT License
 
 ## Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Add tests if applicable
+4. Test thoroughly
 5. Submit a pull request
+
+## License
+
+This project is open source and available under the MIT License.
 
 ## Support
 
-For issues and questions, please create an issue in the repository.
+For issues and questions, please use the GitHub issue tracker.
