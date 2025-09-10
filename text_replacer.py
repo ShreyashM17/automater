@@ -1,11 +1,9 @@
-#!/usr/bin/env python3
 """
 Text Replacer Tool
 A tool to find and replace text in files within a directory, create a Git branch, and raise a PR.
 """
 
 import os
-import sys
 import argparse
 import subprocess
 import re
